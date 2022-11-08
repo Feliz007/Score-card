@@ -1,6 +1,6 @@
 package com.feliz.scorecard.model;
 
-import com.decagon.scorecardapi.enums.AssignRole;
+import com.feliz.scorecard.enums.AssignRole;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.AllArgsConstructor;

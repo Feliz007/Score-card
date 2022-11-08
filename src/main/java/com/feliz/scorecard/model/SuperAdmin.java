@@ -1,7 +1,7 @@
 package com.feliz.scorecard.model;
 
-import com.decagon.scorecardapi.enums.Gender;
-import com.decagon.scorecardapi.enums.Role;
+import com.feliz.scorecard.enums.Role;
+import com.feliz.scorecard.enums.Gender;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
