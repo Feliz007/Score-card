@@ -1,9 +1,8 @@
 package com.feliz.scorecard.serviceimpl;
 
-import com.decagon.scorecardapi.dto.responsedto.APIResponse;
-import com.decagon.scorecardapi.model.*;
 import com.feliz.scorecard.dto.StackDto;
 import com.feliz.scorecard.dto.requestdto.AdminDto;
+import com.feliz.scorecard.dto.responsedto.APIResponse;
 import com.feliz.scorecard.dto.responsedto.SquadDto;
 import com.feliz.scorecard.dto.responsedto.StackResponseDto;
 import com.feliz.scorecard.enums.Role;
@@ -11,10 +10,7 @@ import com.feliz.scorecard.exceptions.CustomException;
 import com.feliz.scorecard.exceptions.ResourceNotFoundException;
 import com.feliz.scorecard.exceptions.SquadAlreadyExistException;
 import com.feliz.scorecard.exceptions.UserNotFoundException;
-import com.feliz.scorecard.model.Admin;
-import com.feliz.scorecard.model.Squad;
-import com.feliz.scorecard.model.Stack;
-import com.feliz.scorecard.model.User;
+import com.feliz.scorecard.model.*;
 import com.feliz.scorecard.repository.PodRepository;
 import com.feliz.scorecard.repository.SquadRepository;
 import com.feliz.scorecard.repository.StackRepository;
