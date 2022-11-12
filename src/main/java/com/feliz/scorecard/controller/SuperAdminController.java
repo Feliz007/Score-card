@@ -1,0 +1,145 @@
+
+package com.feliz.scorecard.controller;
+
+import com.feliz.scorecard.dto.StackDto;
+import com.feliz.scorecard.dto.requestdto.AdminDto;
+import com.feliz.scorecard.dto.responsedto.APIResponse;
+import com.feliz.scorecard.dto.responsedto.SquadDto;
+import com.feliz.scorecard.dto.responsedto.StackResponseDto;
+import com.feliz.scorecard.model.*;
+import com.feliz.scorecard.response.AdminResponse;
+import com.feliz.scorecard.service.AdminService;
+import com.feliz.scorecard.service.SuperAdminService;
+import com.feliz.scorecard.serviceimpl.SquadImpl;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/v1")
+@RequiredArgsConstructor
+public class SuperAdminController {
+    private final SuperAdminService superAdminService;
+    private final SquadImpl squadImpl;
+    private final AdminService adminService;
+
+    @GetMapping("/pods")
+    public ResponseEntity<List<Pod>>getAllPods(){
+        List<Pod>allPods = superAdminService.listOfPods();
+        return new ResponseEntity<>(allPods,HttpStatus.OK);
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<APIResponse> deleteAdmin(@PathVariable("id") Long id){
+        try{
+             return new ResponseEntity<>(new APIResponse<>(true, "Admin deleted successfully", superAdminService.removeAdminById(id)), HttpStatus.OK);
+        }catch(Exception e){
+            return new ResponseEntity<>(new APIResponse(false,"User not found",null),HttpStatus.BAD_REQUEST);
+        }
+    }
+
+
+
+    @PostMapping("/create-admin/{squadId}/{stackId}/{podId}")
+    public ResponseEntity<APIResponse<?>> createAdmin(@RequestBody AdminDto adminDto, @PathVariable("podId") Long podId, @PathVariable("stackId") Long stackId, @PathVariable("squadId") Long squadId) {
+        try {
+            User admin = superAdminService.CreateAdmin(adminDto, podId, stackId, squadId);
+            return new ResponseEntity<>(new APIResponse<>(true, "Admin created successfully", admin), HttpStatus.CREATED);
+        } catch (Exception ex) {
+            return new ResponseEntity<>(new APIResponse<>(false, ex.getMessage(), null), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PostMapping("/create-squad")
+    public ResponseEntity<APIResponse<String>> createSquad(@RequestBody SquadDto squadDto) {
+
+        return new ResponseEntity<>(new APIResponse<>(true, superAdminService.createSquad(squadDto)), HttpStatus.CREATED);
+
+    }
+
+
+
+    @PostMapping("/get-squad/{id}")
+    public ResponseEntity<APIResponse>getSquad(@PathVariable Long id) {
+        return new ResponseEntity<>(new APIResponse<>(true, "Squad found", squadImpl.getSquad(id)), HttpStatus.OK);
+    }
+
+    @GetMapping("/get-admin{id}")
+    public ResponseEntity<APIResponse> getAdmin(@PathVariable (value = "id")Long id){
+        return new ResponseEntity<>(superAdminService.getAdmin(id),HttpStatus.OK);
+
+    }
+
+
+    @GetMapping("/squads/{offset}/{pageSize}")
+    public ResponseEntity<Page<Squad>> getAllSquads(@PathVariable("offset") int offset,
+                                                    @PathVariable("pageSize") int pageSize) {
+        Page<Squad> squads = superAdminService.getAllSquads(offset, pageSize);
+        return new ResponseEntity<>(squads, HttpStatus.OK);
+    }
+
+    @GetMapping("/{squadId}/stacks")
+    public ResponseEntity<List<StackResponseDto>> getDetailsOfAllStacks(@PathVariable("squadId") Long squadId) {
+        List<StackResponseDto> stacks = superAdminService.getDetailsOfAllStacks(squadId);
+        return new ResponseEntity<>(stacks, HttpStatus.OK);
+    }
+
+    @GetMapping("/admins")
+    public ResponseEntity<?> getAllAdmin() {
+        List<AdminResponse> admins = adminService.getAllAdmin();
+        return new ResponseEntity<>(admins, HttpStatus.OK);
+
+    }
+
+    @PutMapping("/update-stack/{stackId}")
+    public ResponseEntity<APIResponse<String>> updateAStack(@RequestBody StackDto stackDto,
+                                                            @PathVariable Long stackId) {
+        return new ResponseEntity<>(superAdminService.updateStack(stackDto, stackId), HttpStatus.OK);
+
+    }
+
+    @GetMapping("/get-stack/{stackId}")
+    public ResponseEntity<APIResponse<Stack>> getStackById(@PathVariable("stackId") Long stackId){
+            Stack stack = superAdminService.getStackUsingId(stackId);
+            return new ResponseEntity<>(new APIResponse<>(true,"Success", stack), HttpStatus.OK);
+    }
+
+    @PutMapping("/update-admin/{adminId}")
+    public ResponseEntity<APIResponse<?>> updateAdmin(@RequestBody AdminDto adminDto, @PathVariable("adminId") Long adminId) {
+        try {
+            APIResponse<Admin> admin = superAdminService.updateAdmin(adminDto, adminId);
+            return new ResponseEntity<>(new APIResponse<>(true, "Admin updated successfully", admin), HttpStatus.CREATED);
+        } catch (Exception ex) {
+            return new ResponseEntity<>(new APIResponse<>(false, ex.getMessage(), null), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+        @PutMapping("/activate-admin/{adminId}")
+        public ResponseEntity<APIResponse<?>> activateAdmin(@PathVariable("adminId") Long adminId) {
+            try {
+                APIResponse<User> admin = superAdminService.activateAdmin(adminId);
+                return new ResponseEntity<>(new APIResponse<>(true, "Admin activated successfully", admin), HttpStatus.CREATED);
+            } catch (Exception ex) {
+                return new ResponseEntity<>(new APIResponse<>(false, ex.getMessage(), null), HttpStatus.BAD_REQUEST);
+            }
+
+        }
+
+        @PutMapping("/deactivate-admin/{adminId}")
+        public ResponseEntity<APIResponse<?>> deactivateAdmin(@PathVariable("adminId") Long adminId) {
+            try {
+                APIResponse<User> admin = superAdminService.deactivateAdmin(adminId);
+                return new ResponseEntity(new APIResponse<>(true, "Admin deactivated successfully", admin), HttpStatus.CREATED);
+            } catch (Exception ex) {
+                return new ResponseEntity<>(new APIResponse<>(false, ex.getMessage(), null), HttpStatus.BAD_REQUEST);
+            }
+
+        }
+
+}
+
+
