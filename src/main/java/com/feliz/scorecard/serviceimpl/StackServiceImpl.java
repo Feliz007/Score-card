@@ -1,15 +1,16 @@
-package com.feliz.scorecard.service;
+package com.feliz.scorecard.serviceimpl;
 
 import com.feliz.scorecard.dto.StackDto;
 import com.feliz.scorecard.dto.responsedto.APIResponse;
 import com.feliz.scorecard.model.StackTemplate;
 import com.feliz.scorecard.repository.StackTemplateRepository;
+import com.feliz.scorecard.service.StackService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
 @AllArgsConstructor
-public class StackServiceImpl implements StackService{
+public class StackServiceImpl implements StackService {
 
     private final StackTemplateRepository stackTemplateRepository;
 

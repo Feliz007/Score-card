@@ -29,6 +29,7 @@ public class User extends BaseClass implements Serializable {
     private Role role;
     private String password;
     private Boolean isAccountActive;
+    private String userOTP;
 
     public void deactivateUser(){
         this.setIsAccountActive(false);

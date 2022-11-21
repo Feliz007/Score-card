@@ -73,6 +73,10 @@ public class SuperAdminController {
         return new ResponseEntity<>(superAdminService.getAdmin(id),HttpStatus.OK);
 
     }
+    @GetMapping(value ="/get-pod/{podId}")
+    public ResponseEntity<APIResponse<?>> getPod(@PathVariable(value = "podId")Long id){
+        return  Responder.successful(superAdminService.getPod(id));
+    }
 
 
     @GetMapping("/squads/{offset}/{pageSize}")

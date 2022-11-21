@@ -1,15 +1,15 @@
 package com.feliz.scorecard.serviceimpl;
 
+import com.feliz.scorecard.dto.ChangePasswordRequest;
+import com.feliz.scorecard.dto.ForgetPasswordRequest;
+import com.feliz.scorecard.dto.ResetPasswordRequest;
 import com.feliz.scorecard.dto.StackDto;
 import com.feliz.scorecard.dto.requestdto.AdminDto;
 import com.feliz.scorecard.dto.responsedto.APIResponse;
 import com.feliz.scorecard.dto.responsedto.SquadDto;
 import com.feliz.scorecard.dto.responsedto.StackResponseDto;
 import com.feliz.scorecard.enums.Role;
-import com.feliz.scorecard.exceptions.CustomException;
-import com.feliz.scorecard.exceptions.ResourceNotFoundException;
-import com.feliz.scorecard.exceptions.SquadAlreadyExistException;
-import com.feliz.scorecard.exceptions.UserNotFoundException;
+import com.feliz.scorecard.exceptions.*;
 import com.feliz.scorecard.model.*;
 import com.feliz.scorecard.repository.PodRepository;
 import com.feliz.scorecard.repository.SquadRepository;
@@ -17,7 +17,7 @@ import com.feliz.scorecard.repository.StackRepository;
 import com.feliz.scorecard.repository.UserRepository;
 import com.feliz.scorecard.service.EmailService;
 import com.feliz.scorecard.service.SuperAdminService;
-import com.feliz.scorecard.utility.PasswordGenerator;
+import com.feliz.scorecard.utility.Generator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -25,6 +25,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -63,7 +64,7 @@ public class SuperAdminServiceImpl implements SuperAdminService {
         if (userRepository.findByEmail(adminDto.getEmail()).isPresent()) {
             throw new CustomException("User email already exist");
         }
-        StringBuilder password = PasswordGenerator.generatePassword(10);
+        StringBuilder password = Generator.generatePassword(10);
         Admin admin = new Admin();
         admin.setFirstName(adminDto.getFirstName());
         admin.setLastName(adminDto.getLastName());
@@ -175,6 +176,65 @@ public class SuperAdminServiceImpl implements SuperAdminService {
         admin.deactivateUser();
         userRepository.save(admin);
         return new APIResponse<>(true, "Admin deactivated successfully", admin);
+    }
+
+    public Pod getPod(Long id) {
+
+        return podRepository.findById(id).orElseThrow(()-> new PodNotFoundException(String.format("Pod with id %d not found",id)));
+    }
+
+    @Override
+    public APIResponse<?> forgotPassword(ForgetPasswordRequest request) {
+        Optional<User> user = userRepository.findByEmail(request.getEmail());
+        if (user.isEmpty()) {
+            throw new UserNotFoundException("User not found");
+        }
+        else {
+            StringBuilder password = Generator.generateOTP(5);
+            user.get().setUserOTP(passwordEncoder.encode(password));
+            user.get().setUpdateDate(LocalDateTime.now());
+            userRepository.save(user.get());
+            emailService.sendEmail("You can now reset your password for this email " + user.get().getEmail() + " and this token " + password + "\n",
+                    "Password reset", user.get().getEmail());
+            return new APIResponse<>(true, "Verify OTP");
+        }
+    }
+
+    @Override
+    public APIResponse<?> resetPassword(ResetPasswordRequest request) {
+        Optional<User> user = userRepository.findByEmail(request.getEmail());
+        if (user.isEmpty()) {
+            throw new UserNotFoundException("User not found");
+        }
+        else {
+            if (passwordEncoder.matches(request.getUserOTP(), user.get().getUserOTP())) {
+                if (LocalDateTime.now().isBefore(user.get().getUpdateDate().plusMinutes(10))){
+                    user.get().setPassword(passwordEncoder.encode(request.getNewPassword()));
+                    user.get().setUserOTP(null);
+                    userRepository.save(user.get());
+                    return new APIResponse<>(true, "Password changed successfully");
+                }else
+                    throw new TokenExpiredException("Token has expired");
+            }
+            else {
+                throw new PasswordNotMatchException("invalid token provided");
+            }
+        }
+    }
+    @Override
+    public APIResponse<?> changePassword(ChangePasswordRequest request, String email) {
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException("User not found"));
+        if (!request.getNewPassword().equals(request.getConfirmPassword())) {
+            throw new PasswordNotMatchException("New password and confirm password do not match");
+        }
+        if (passwordEncoder.matches(request.getOldPassword(), user.getPassword())) {
+            user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+            userRepository.save(user);
+            return new APIResponse<>(true, "Password changed successfully");
+        }
+        else {
+            throw new PasswordNotMatchException("Old password does not match");
+        }
     }
 
 

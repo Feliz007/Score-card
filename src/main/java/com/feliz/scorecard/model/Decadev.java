@@ -53,4 +53,8 @@ public class Decadev extends User{
     @ManyToMany(mappedBy = "decadev")
     private List<WeeklyTask> weeklyTasks = new ArrayList<>();
 
+    @JsonBackReference
+    @OneToMany(mappedBy = "decadev")
+    private List<WeeklyScore> weeklyScores = new ArrayList<>();
+
 }

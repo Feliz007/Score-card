@@ -1,7 +1,6 @@
 package com.feliz.scorecard.utility;
 
-public class PasswordGenerator {
-
+public class Generator {
     public static StringBuilder generatePassword(int passwordLength) {
         String capitalCaseLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         String lowerCaseLetters = "abcdefghijklmnopqrstuvwxyz";
@@ -15,6 +14,15 @@ public class PasswordGenerator {
         for (int i = 0; i <= passwordLength; i++) {
             int index = (int) (values.length() * Math.random());
             password.append(values.charAt(index));
+        }
+        return password;
+    }
+
+    public static StringBuilder generateOTP(int tokenLength) {
+        StringBuilder password = new StringBuilder();
+        for (int i = 0; i < tokenLength; i++) {
+            int index = (int) (10 * Math.random());
+            password.append(index);
         }
         return password;
     }

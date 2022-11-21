@@ -1,5 +1,8 @@
 package com.feliz.scorecard.service;
 
+import com.feliz.scorecard.dto.ChangePasswordRequest;
+import com.feliz.scorecard.dto.ForgetPasswordRequest;
+import com.feliz.scorecard.dto.ResetPasswordRequest;
 import com.feliz.scorecard.dto.StackDto;
 import com.feliz.scorecard.dto.requestdto.AdminDto;
 import com.feliz.scorecard.dto.responsedto.APIResponse;
@@ -33,6 +36,15 @@ public interface SuperAdminService {
 
     APIResponse<User>activateAdmin(Long adminId);
     APIResponse<User> deactivateAdmin(Long adminId);
+
+    Pod getPod(Long id);
+
+    APIResponse<?> forgotPassword(ForgetPasswordRequest request);
+
+    APIResponse<?> resetPassword(ResetPasswordRequest request);
+
+
+    APIResponse<?> changePassword(ChangePasswordRequest request, String email);
 
 
 }
