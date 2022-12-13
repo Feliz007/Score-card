@@ -14,5 +14,8 @@ public class AdminDto {
     private Gender gender;
     private String email;
     private AssignRole assignRole;
+    private Long squadId;
+    private Long stackId;
+    private Long podId;
     private Role role;
 }

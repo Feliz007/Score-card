@@ -1,5 +1,6 @@
 package com.feliz.scorecard.repository;
 
+import com.feliz.scorecard.model.Squad;
 import com.feliz.scorecard.model.Stack;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -13,7 +14,7 @@ public interface StackRepository extends JpaRepository<Stack, Long> {
 
     Stack findByStackName(String stackName);
     Optional<Stack> findById(Long id);
+    boolean existsBySquadAndStackName(Squad squad, String stackName);
 
-
-
+    Optional<Stack> findFirstByStackNameIgnoreCase(String stackName);
 }

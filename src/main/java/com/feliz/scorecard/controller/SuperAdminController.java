@@ -1,6 +1,7 @@
 
 package com.feliz.scorecard.controller;
 
+import com.feliz.scorecard.dto.PodResponseDto;
 import com.feliz.scorecard.dto.StackDto;
 import com.feliz.scorecard.dto.requestdto.AdminDto;
 import com.feliz.scorecard.dto.responsedto.APIResponse;
@@ -10,7 +11,8 @@ import com.feliz.scorecard.model.*;
 import com.feliz.scorecard.response.AdminResponse;
 import com.feliz.scorecard.service.AdminService;
 import com.feliz.scorecard.service.SuperAdminService;
-import com.feliz.scorecard.serviceimpl.SquadImpl;
+import com.feliz.scorecard.serviceImpl.SquadImpl;
+import com.feliz.scorecard.utility.Responder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -33,6 +35,12 @@ public class SuperAdminController {
         return new ResponseEntity<>(allPods,HttpStatus.OK);
     }
 
+    @GetMapping("/pods/{id}")
+    public ResponseEntity<List<PodResponseDto>>getAllPodsInAStack(@PathVariable("id") Long stackId){
+        List<PodResponseDto>allPods = superAdminService.getAllPodsInAStack(stackId);
+        return new ResponseEntity<>(allPods,HttpStatus.OK);
+    }
+
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<APIResponse> deleteAdmin(@PathVariable("id") Long id){
         try{
@@ -43,15 +51,11 @@ public class SuperAdminController {
     }
 
 
+    @PostMapping("/create-admin")
+    public ResponseEntity<APIResponse<?>> createAdmin(@RequestBody AdminDto adminDto ) {
 
-    @PostMapping("/create-admin/{squadId}/{stackId}/{podId}")
-    public ResponseEntity<APIResponse<?>> createAdmin(@RequestBody AdminDto adminDto, @PathVariable("podId") Long podId, @PathVariable("stackId") Long stackId, @PathVariable("squadId") Long squadId) {
-        try {
-            User admin = superAdminService.CreateAdmin(adminDto, podId, stackId, squadId);
-            return new ResponseEntity<>(new APIResponse<>(true, "Admin created successfully", admin), HttpStatus.CREATED);
-        } catch (Exception ex) {
-            return new ResponseEntity<>(new APIResponse<>(false, ex.getMessage(), null), HttpStatus.BAD_REQUEST);
-        }
+        User admin = superAdminService.CreateAdmin(adminDto);
+        return new ResponseEntity<>(new APIResponse<>(true, "Admin created successfully", admin), HttpStatus.CREATED);
     }
 
     @PostMapping("/create-squad")
@@ -113,7 +117,8 @@ public class SuperAdminController {
     }
 
     @PutMapping("/update-admin/{adminId}")
-    public ResponseEntity<APIResponse<?>> updateAdmin(@RequestBody AdminDto adminDto, @PathVariable("adminId") Long adminId) {
+    public ResponseEntity<APIResponse<?>> updateAdmin(@RequestBody AdminDto adminDto,
+                                                      @PathVariable("adminId") Long adminId) {
         try {
             APIResponse<Admin> admin = superAdminService.updateAdmin(adminDto, adminId);
             return new ResponseEntity<>(new APIResponse<>(true, "Admin updated successfully", admin), HttpStatus.CREATED);

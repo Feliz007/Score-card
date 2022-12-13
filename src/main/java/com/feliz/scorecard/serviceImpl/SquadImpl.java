@@ -1,4 +1,4 @@
-package com.feliz.scorecard.serviceimpl;
+package com.feliz.scorecard.serviceImpl;
 
 import com.feliz.scorecard.exceptions.SquadNotFoundException;
 import com.feliz.scorecard.model.Squad;

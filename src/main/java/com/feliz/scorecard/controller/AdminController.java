@@ -3,7 +3,6 @@ package com.feliz.scorecard.controller;
 import com.feliz.scorecard.dto.DecadevDto;
 import com.feliz.scorecard.dto.WeeklyScoreDto;
 import com.feliz.scorecard.dto.responsedto.APIResponse;
-import com.feliz.scorecard.model.User;
 import com.feliz.scorecard.model.WeeklyScore;
 import com.feliz.scorecard.service.AdminService;
 import lombok.RequiredArgsConstructor;
@@ -24,16 +23,23 @@ public class AdminController {
 
 
     @PostMapping("/create-decadev/{squadId}/{stackId}/{podId}")
-    public ResponseEntity<APIResponse<?>> createDecadev(@RequestBody DecadevDto decadevDto, @PathVariable("podId") Long podId, @PathVariable("stackId") Long stackId, @PathVariable("squadId") Long squadId) {
-            User dev = adminService.createDecadev(decadevDto, podId, stackId, squadId);
-            return new ResponseEntity<>(new APIResponse<>(true, "decadev created successfully", dev), HttpStatus.CREATED);
+    public ResponseEntity<APIResponse<?>> createDecadev(@RequestBody DecadevDto decadevDto,
+                                                        @PathVariable("podId") Long podId,
+                                                        @PathVariable("stackId") Long stackId,
+                                                        @PathVariable("squadId") Long squadId) {
+        String response = adminService.createDecadev(decadevDto, podId, stackId, squadId);
+        return new ResponseEntity<>(new APIResponse<>(true, "decadev created successfully", response), HttpStatus.CREATED);
 
     }
 
-    @PutMapping("/update-decadev/{squadId}/{stackId}/{podId}")
-    public ResponseEntity<APIResponse<?>> updateDecadev(@RequestBody DecadevDto decadevDto, @PathVariable("podId") Long podId, @PathVariable("stackId") Long stackId, @PathVariable("squadId") Long squadId) {
-        User dev = adminService.createDecadev(decadevDto, podId, stackId, squadId);
-        return new ResponseEntity<>(new APIResponse<>(true, "Decadev updated successfully", dev), HttpStatus.CREATED);
+    @PutMapping("/update-decadev/{decadevId}/{podId}/{stackId}/{squadId}")
+    public ResponseEntity<APIResponse<?>> updateDecadev (@RequestBody DecadevDto decadevDto,
+                                                         @PathVariable ("decadevId") Long decadevId ,
+                                                         @PathVariable("podId") Long podId,
+                                                         @PathVariable("stackId") Long stackId,
+                                                         @PathVariable("squadId") Long squadId) {
+
+        return new ResponseEntity<>( adminService.updateDecadev(decadevDto, decadevId, podId, stackId, squadId), HttpStatus.CREATED);
 
     }
 
@@ -57,13 +63,15 @@ public class AdminController {
 
     }
     @PutMapping("/update-score/{devId}/weekly-score/{weekId}")
-    public ResponseEntity<APIResponse<?>> updateScore(@PathVariable("devId") Long devId,@PathVariable("weekId") Long weekId, @RequestBody WeeklyScoreDto score) {
+    public ResponseEntity<APIResponse<?>> updateScore(@PathVariable("devId") Long devId,
+                                                      @PathVariable("weekId") Long weekId, @RequestBody WeeklyScoreDto score) {
         WeeklyScore devScore = adminService.updateDecadevWeeklyScore(score, devId, weekId);
         return new ResponseEntity<>(new APIResponse<>(true, "Succesfully updated your score", devScore), HttpStatus.OK);
     }
 
     @GetMapping("/getScore/{week}/{dev_id}")
-    public ResponseEntity<APIResponse<?>> getDevScore(@PathVariable("week")String week, @PathVariable("dev_id")Long dev_id){
+    public ResponseEntity<APIResponse<?>> getDevScore(@PathVariable("week")String week,
+                                                      @PathVariable("dev_id")Long dev_id){
         WeeklyScore devScore = adminService.getDevWeeklyScore(week,dev_id);
         return new ResponseEntity<>(new APIResponse<>(true,"Dev Weekly Score", devScore), HttpStatus.OK);
     }

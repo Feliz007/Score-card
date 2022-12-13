@@ -21,12 +21,11 @@ public class Squad extends BaseClass {
     private String squadName;
     @JsonManagedReference
     @OneToMany
-    @JoinColumn(name = "stack_squad", referencedColumnName = "id")
+    @JoinColumn(name = "squad_id", referencedColumnName = "id")
     private List<Stack> stacks;
 
     @JsonManagedReference
-    @ManyToMany
-    @JoinColumn(name = "stack_admin", referencedColumnName = "id")
+    @ManyToMany(mappedBy = "squads")
     private List<Admin> admin;
 
     @JsonBackReference

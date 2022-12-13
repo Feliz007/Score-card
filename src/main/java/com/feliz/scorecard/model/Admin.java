@@ -1,8 +1,7 @@
 package com.feliz.scorecard.model;
 
-import com.feliz.scorecard.enums.AssignRole;
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.feliz.scorecard.enums.AssignRole;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,16 +20,16 @@ public class Admin extends User{
     @Enumerated(EnumType.STRING)
     private AssignRole assignRole;
 
-    @JsonManagedReference
-    @ManyToMany
-    @JoinColumn(name = "admin_squad", referencedColumnName = "id")
+    @JsonBackReference
+    @ManyToMany(cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH })
+    @JoinTable(name = "admin_squad",joinColumns = {@JoinColumn(name = "user_id")},inverseJoinColumns = {@JoinColumn(name = "squad_id")})
     private List<Squad> squads;
-    @JsonManagedReference
-    @ManyToMany
-    @JoinColumn(name = "stack_admin",referencedColumnName = "id")
+    @JsonBackReference
+    @ManyToMany(cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH })
+    @JoinTable(name = "admin_stack",joinColumns = {@JoinColumn(name = "user_id")},inverseJoinColumns = {@JoinColumn(name = "stack_id")})
     private List<Stack> stacks;
     @JsonBackReference
-    @ManyToMany
-    @JoinColumn(name = "admin_pod",referencedColumnName = "id")
+    @ManyToMany(cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH })
+    @JoinTable(name = "admin_pod",joinColumns = {@JoinColumn(name = "user_id")},inverseJoinColumns = {@JoinColumn(name = "pod_id")})
     private List<Pod> pods;
 }

@@ -20,6 +20,8 @@ public class Pod extends BaseClass{
 
     private  String podName;
 
+    private String PodHealth = "0";
+
     @JsonManagedReference
     @ManyToMany(mappedBy = "pods")
     private List<Admin> admin = new ArrayList<>();
@@ -30,7 +32,7 @@ public class Pod extends BaseClass{
 
     @JsonBackReference
     @ManyToOne
-    @JoinColumn(name = "stack_pod", referencedColumnName = "id")
+    @JoinColumn(name = "pod_id", referencedColumnName = "id")
     private Stack stack;
 
 }

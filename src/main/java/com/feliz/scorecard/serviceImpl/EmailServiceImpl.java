@@ -1,4 +1,4 @@
-package com.feliz.scorecard.serviceimpl;
+package com.feliz.scorecard.serviceImpl;
 
 import com.feliz.scorecard.service.EmailService;
 import lombok.RequiredArgsConstructor;

@@ -1,42 +1,40 @@
-package com.feliz.scorecard.serviceimpl;
+package com.feliz.scorecard.serviceImpl;
 
-import com.feliz.scorecard.dto.WeeklyScoreDto;
 import com.feliz.scorecard.dto.DecadevDto;
+import com.feliz.scorecard.dto.WeeklyScoreDto;
 import com.feliz.scorecard.dto.responsedto.APIResponse;
 import com.feliz.scorecard.enums.Role;
 import com.feliz.scorecard.exceptions.*;
-import com.feliz.scorecard.exception.CustomException;
-import com.feliz.scorecard.exception.UserNotFoundException;
-import com.feliz.scorecard.model.Admin;
-import com.feliz.scorecard.model.Decadev;
-import com.feliz.scorecard.model.WeeklyScore;
-import com.feliz.scorecard.repository.AdminRepository;
-import com.feliz.scorecard.repository.DecadevRepository;
-import com.feliz.scorecard.repository.WeeklyScoreRepository;
-import com.feliz.scorecard.exception.SquadNotFoundException;
-import com.feliz.scorecard.exception.StackNotFoundException;
 import com.feliz.scorecard.model.*;
 import com.feliz.scorecard.repository.*;
 import com.feliz.scorecard.response.AdminResponse;
 import com.feliz.scorecard.service.AdminService;
+import com.feliz.scorecard.service.EmailService;
 import com.feliz.scorecard.utility.CalculateScores;
+import com.feliz.scorecard.utility.Generator;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+
+@RequiredArgsConstructor
+@Service
 public class AdminServiceImpl implements AdminService {
-    private AdminRepository adminRepository;
-    private DecadevRepository decadevRepository;
-    private WeeklyScoreRepository scoreRepository;
-    private UserRepository userRepository;
-    private PodRepository podRepository;
-    private StackRepository stackRepository;
-    private SquadRepository squadRepository;
+
+    private final AdminRepository adminRepository;
+    private final DecadevRepository decadevRepository;
+    private final WeeklyScoreRepository scoreRepository;
+    private final UserRepository userRepository;
+    private final PodRepository podRepository;
+    private final StackRepository stackRepository;
+    private final SquadRepository squadRepository;
+    private  final PasswordEncoder passwordEncoder;
+    private  final EmailService emailService;
 
     @Override
     public List<AdminResponse> getAllAdmin() {
@@ -110,10 +108,11 @@ public class AdminServiceImpl implements AdminService {
         return decadev.getWeeklyScores().stream().filter(weeklyScore -> weeklyScore.getId().equals(weekId)).findFirst();
     }
 
-    public User createDecadev(DecadevDto decadev, Long podId, Long stackId, Long squadId) {
+    public String createDecadev(DecadevDto decadev, Long podId, Long stackId, Long squadId) {
         if (userRepository.findByEmail(decadev.getEmail()).isPresent()) {
             throw new CustomException("User email already exist");
         }
+        StringBuilder password = Generator.generatePassword(10);
         Pod pod = podRepository.findById(podId).orElseThrow(() -> new CustomException("Not found"));
         Stack stack = stackRepository.findById(stackId).orElseThrow(() -> new StackNotFoundException("Not found"));
         Squad squad = squadRepository.findById(squadId).orElseThrow(() -> new SquadNotFoundException("Not found"));
@@ -124,11 +123,16 @@ public class AdminServiceImpl implements AdminService {
         dev.setEmail(decadev.getEmail());
         dev.setDecadevId(decadev.getDecadevId());
         dev.setRole(decadev.getRole());
+        dev.setPassword(passwordEncoder.encode(password));
+        dev.setIsAccountActive(true);
         dev.setSquad(squad);
         dev.setStack(stack);
         dev.setPod(pod);
+        userRepository.save(dev);
+        emailService.sendEmail("ScoreCard login details \n" + "password: " + password + "\n Email: " + dev.getEmail() + "\n",
+                "You have been added as a decadev", dev.getEmail());
 
-        return userRepository.save(dev);
+        return "Dev created succesfully";
 
     }
     @Override
@@ -139,7 +143,7 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public APIResponse<Decadev> updateDecadev(DecadevDto decadevDto, Long decadevId,  Long podId, Long stackId, Long squadId ) {
+    public APIResponse<Decadev> updateDecadev(DecadevDto decadevDto, Long decadevId, Long podId, Long stackId, Long squadId ) {
         Decadev decadev = (Decadev) userRepository.findById(decadevId).orElseThrow(() -> new CustomException("Decadev not found"));
         Pod pod = podRepository.findById(podId).orElseThrow(()-> new CustomException("Not found"));
         Stack stack = stackRepository.findById(stackId).orElseThrow(()-> new StackNotFoundException("Not found"));

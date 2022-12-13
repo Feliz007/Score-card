@@ -1,9 +1,6 @@
 package com.feliz.scorecard.service;
 
-import com.feliz.scorecard.dto.ChangePasswordRequest;
-import com.feliz.scorecard.dto.ForgetPasswordRequest;
-import com.feliz.scorecard.dto.ResetPasswordRequest;
-import com.feliz.scorecard.dto.StackDto;
+import com.feliz.scorecard.dto.*;
 import com.feliz.scorecard.dto.requestdto.AdminDto;
 import com.feliz.scorecard.dto.responsedto.APIResponse;
 import com.feliz.scorecard.dto.responsedto.SquadDto;
@@ -19,7 +16,7 @@ public interface SuperAdminService {
 
     String removeAdminById(Long id);
 
-    User CreateAdmin(AdminDto adminDto, Long podId, Long stackId, Long squadId);
+    User CreateAdmin(AdminDto adminDto);
 
     String createSquad(SquadDto squadDto);
 
@@ -46,6 +43,6 @@ public interface SuperAdminService {
 
     APIResponse<?> changePassword(ChangePasswordRequest request, String email);
 
-
+    List<PodResponseDto> getAllPodsInAStack(Long stackId);
 }
 

@@ -1,4 +1,4 @@
-package com.feliz.scorecard.serviceimpl;
+package com.feliz.scorecard.serviceImpl;
 
 import com.feliz.scorecard.configuration.security.AuthUserService;
 import com.feliz.scorecard.configuration.security.JwtService;

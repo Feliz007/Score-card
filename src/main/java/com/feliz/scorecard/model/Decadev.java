@@ -22,36 +22,16 @@ public class Decadev extends User{
 
     @JsonBackReference
     @ManyToOne
-    @JoinColumn(name = "decadev_squad", referencedColumnName = "id")
+    @JoinColumn(name = "squad_id", referencedColumnName = "id")
     private Squad squad;
     @JsonBackReference
     @ManyToOne
-    @JoinColumn(name = "decadev_stack", referencedColumnName = "id")
+    @JoinColumn(name = "stack_id", referencedColumnName = "id")
     private Stack stack;
-
     @JsonBackReference
     @ManyToOne
-    @JoinColumn(name = "dev_pod",referencedColumnName = "id")
+    @JoinColumn(name = "pod_id",referencedColumnName = "id")
     private Pod pod;
-    @JsonBackReference
-    @ManyToMany(mappedBy = "decadev")
-    private List<Algorithm> algorithm = new ArrayList<>();
-
-    @JsonBackReference
-    @ManyToMany(mappedBy = "decadev")
-    private List<AgileTest> agileTests = new ArrayList<>();
-
-    @JsonBackReference
-    @ManyToMany(mappedBy = "decadev")
-    private List<AssessmentTest> assessmentTests = new ArrayList<>();
-
-    @JsonBackReference
-    @ManyToMany(mappedBy = "decadev")
-    private List<QATest> QATests = new ArrayList<>();
-
-    @JsonBackReference
-    @ManyToMany(mappedBy = "decadev")
-    private List<WeeklyTask> weeklyTasks = new ArrayList<>();
 
     @JsonBackReference
     @OneToMany(mappedBy = "decadev")
